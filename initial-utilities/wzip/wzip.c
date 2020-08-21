@@ -21,7 +21,7 @@ struct Blocks{
 
 // Create a array of blocks to be
 // written to standard output.
-struct Blocks* createBlocks(FILE*);
+int createBlocks(FILE*, struct Blocks*);
 // Write to standard output
 // as many blocks as we have created
 void writeBlocks(struct Blocks*, int);
@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
 {
   FILE* file;
   // Array of blocks
-  struct Blocks* blocks = NULL;
+  struct Blocks* blocks = (struct Blocks*) malloc(sizeof(struct Blocks) * 10);
   int block_num = 0;
 
   switch (argc) {
@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
     default:
       for (int i = 1; i < argc; ++i) {
         if( !(file = openFile(argv[i]))) return 1;
-        createBlocks(file);
+        block_num = createBlocks(file, blocks);
         writeBlocks(blocks, block_num);
         fclose(file);
       }
@@ -63,33 +63,52 @@ FILE* openFile(char* fileName){
   return p_file;
 }
 
-// TODO: BLOCK_NUM has to be calculated here.
-// As we create the blocks, we have to increase block_num
-struct Blocks* createBlocks(FILE* file){
-  printf("Buenas!\n");
+/*! \brief Creates blocks
+ *
+ *  Creates blocks from original file.
+ *  Each block consists of a 4-byte binary integer
+ *  and a char, to specify the character read
+ *
+ * \param FILE* file The file pointer to read data from
+ * \param struct Blocks* Pointer to the list of blocks 
+ * \return int numBlocks The number of blocks that have been created
+ */
+int createBlocks(FILE* file, struct Blocks* blocks){
   char buf, previous_buf;
-  struct Blocks block;
-  block.occurences = 0;
-  while ((fread(&buf, sizeof(char), 1, file)) != 0) {
-    printf("%c", buf);
-    if (buf == previous_buf) {
-      block.occurences++;
-      //TODO This can be optimized to be set once characters differ.
-      block.character = buf;
-    } else {
+  int occurence = 0, numBlocks = 0;
+
+  int first = 1;
+  while ((fread(&buf, sizeof(char), 1, file)) != 0){
+    // TODO: Is it really necesary?  
+    if(first == 1) {
       previous_buf = buf;
+      first = 0;
     }
-    
+    if(buf != previous_buf){
+      struct Blocks block;
+      block.character = previous_buf;
+      block.occurences = occurence;
+      blocks[numBlocks] = block;
+      numBlocks++;
+      previous_buf = buf;
+      occurence = 1;
+    }else{ 
+      occurence++;
+    }
   }
-  struct Blocks* blocks = (struct Blocks*) malloc(sizeof(struct Blocks) * 1);
-  return blocks;
+
+  return numBlocks;
 }
 
 // Write blocks array until it has finished
-void writeBlocks(struct Blocks* block, int block_num){
+void writeBlocks(struct Blocks* blocks, int block_num){
   //                      DATA                SIZE        COUNT             STREAM
   // fwrite(const void *restrict __ptr, size_t __size, size_t __n, FILE *restrict __s)
-  if (fwrite(&block, BLOCK_SIZE, block_num, stdout) != block_num){
-    perror("Error writing");
+//  if (fwrite(&blocks, BLOCK_SIZE, block_num, stdout) != block_num){
+//    perror("Error writing");
+//  }
+  
+  for (int i = 0; i < block_num; ++i) {
+    printf("%d%c", blocks[i].occurences, blocks[i].character);
   }
 }
