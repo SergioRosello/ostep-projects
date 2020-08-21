@@ -3,7 +3,8 @@
 #include <string.h>
 #include <stdio.h>
 
-void checkExists(FILE* , char* );
+void printSearch(char*, int, char*);
+void checkExists(FILE*, char*);
 void searchInFiles(int, char**);
 void searchInStdImput(char*);
 
@@ -30,22 +31,9 @@ int main(int argc, char *argv[])
   return 0;
 }
 
-//TODO: Finish standard input implementation
+// Swap file descriptor for stdin
 void searchInStdImput(char* term){
-  // We are reserving as much space as the variable we are going to search for
-  // The problem is that we have to stop reading when a enter is pressed.
-  char *buf = (char*) malloc(sizeof(char) * strlen(term) + 1);
-  char* match;
-  int fr;
-  while ((fr = fread(buf, strlen(term), 1, stdin)) != 0) { // Read the data from input
-    printf("fread: %d\n", fr);
-  // Do something with data stored in buffer
-    if (( match = strstr(buf, term)) != NULL ) {
-      printf("\033[1;31m");
-      printf("%s", term);
-      printf("\033[0m;");
-    }
-  }
+  checkExists(stdin, term);
 }
 
 // Function that searches for occurences of a string in subsequent
@@ -88,10 +76,15 @@ void checkExists(FILE* file, char* search){
         lineNumber++;
         //Perform search function
         if (( match = strstr(line, search)) != NULL ) {
-          printf("\033[1;31m");
-          printf("%d: %s", lineNumber, line);
-          printf("\033[0m;");
+          printSearch(line, lineNumber, search);
         }
       }
     }
+}
+
+void printSearch(char* line, int lineNumber, char* term){
+  printf("\033[1;31m");
+  printf("%d: %s", lineNumber, line);
+  printf("\033[0m");
+
 }
