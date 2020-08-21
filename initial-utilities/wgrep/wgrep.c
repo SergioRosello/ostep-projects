@@ -32,9 +32,13 @@ int main(int argc, char *argv[])
 
 //TODO: Finish standard input implementation
 void searchInStdImput(char* term){
-  char buf[100];
+  // We are reserving as much space as the variable we are going to search for
+  // The problem is that we have to stop reading when a enter is pressed.
+  char *buf = (char*) malloc(sizeof(char) * strlen(term) + 1);
   char* match;
-  while (fread(buf, strlen(term), 1, stdin) != 0) { // Read the data from input
+  int fr;
+  while ((fr = fread(buf, strlen(term), 1, stdin)) != 0) { // Read the data from input
+    printf("fread: %d\n", fr);
   // Do something with data stored in buffer
     if (( match = strstr(buf, term)) != NULL ) {
       printf("\033[1;31m");
