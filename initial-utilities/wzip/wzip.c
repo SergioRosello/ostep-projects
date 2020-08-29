@@ -104,11 +104,24 @@ int createBlocks(FILE* file, struct Blocks* blocks){
 void writeBlocks(struct Blocks* blocks, int block_num){
   //                      DATA                SIZE        COUNT             STREAM
   // fwrite(const void *restrict __ptr, size_t __size, size_t __n, FILE *restrict __s)
-//  if (fwrite(&blocks, BLOCK_SIZE, block_num, stdout) != block_num){
-//    perror("Error writing");
-//  }
-  
-  for (int i = 0; i < block_num; ++i) {
-    printf("%d%c", blocks[i].occurences, blocks[i].character);
+  printf("Size of struct Blocks: %lu\n", sizeof(struct Blocks));
+  printf("Size of blocks.occurence: %lu\n", sizeof(blocks[0].occurences));
+  printf("Size of blcoks.character: %lu\n", sizeof(blocks[0].character));
+  if (fwrite(&blocks, sizeof(struct Blocks), block_num, stdout) != block_num){
+    perror("Error writing");
   }
+
+  printf("Change, printing only struct data below\n");
+
+  for (int i = 0; i < block_num; ++i) {
+    fwrite(&blocks->occurences, sizeof(unsigned int), 1, stdout);
+    fwrite(&blocks->character, sizeof(char), 1, stdout);
+  }
+  
+// Store data from struct as specified format
+// Print as specified format
+//  for (int i = 0; i < block_num; ++i) {
+//    printf("%d%c", blocks[i].occurences, blocks[i].character);
+//    gethcar();
+//  }
 }
