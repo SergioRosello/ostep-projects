@@ -1,22 +1,18 @@
-all: reverse main
+all: main
 
 main:
-	g++ -o main main.cpp -Wall -Werror
-
-reverse: 
-	# Compile and link with shared library
-	#g++ -o reverse reverse.cpp -Wall -Werror
+	g++ -o reverse main.cpp -Wall -Werror
 
 run: clear main
 	# Run reverse with no parameters
-	#./reverse
+	#./main
 	# Run reverse with one parameter
-	#./reverse normal
+	./reverse normal
 	# Run reverse with two parameters
-	./main normal normalReversed
+	./reverse normal normalReversed
 	# Run with too many input
-	#./reverse normal normalReversed other
+	./reverse normal normalReversed other
 
 clear:
-	rm -rf main stack
+	rm -rf reverse
 

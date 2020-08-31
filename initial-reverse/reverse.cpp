@@ -19,7 +19,9 @@ class Reverser
     Reverser();
     Reverser(char* input);
     Reverser(char* input, char* output);
-    void reverse();
+    void reverseToFile();
+    void reverseToSTDOUT();
+    void reverseInteractive();
     ~Reverser();
 
   protected:
@@ -30,12 +32,43 @@ class Reverser
     char* output;
 };
 
+Reverser::Reverser(){
+}
+Reverser::Reverser(char* input){
+  this->input = input;
+}
 Reverser::Reverser(char* input, char* output){
   this->input = input;
   this->output = output;
 }
 
-void Reverser::reverse(){
+void Reverser::reverseInteractive(){
+  string line;
+  while(getline(cin, line)){
+    stack.Push(line);
+    while(!stack.isEmpty()){
+      cout << stack.Pop() << endl;
+    }
+  }
+}
+
+void Reverser::reverseToSTDOUT(){
+  ifstream inputFile(this->input);
+  string line;
+  if(inputFile.is_open()){
+    while(getline(inputFile, line)){
+      stack.Push(line);
+    }
+    inputFile.close();
+  }else{
+    cout << "Unable to open file\n";
+  }
+  while(!stack.isEmpty()){
+    cout << stack.Pop() << endl ;
+  }
+}
+
+void Reverser::reverseToFile(){
   ifstream inputFile(this->input);
   ofstream outputFile(this->output);
   string line;
@@ -49,8 +82,7 @@ void Reverser::reverse(){
   }
   if(outputFile.is_open()){
     while(!stack.isEmpty()){
-      outputFile << stack.Pop();
-      outputFile << endl;
+      outputFile << stack.Pop() << endl;
     }
   }
 }
